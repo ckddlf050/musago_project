@@ -4,7 +4,7 @@ import pandas as pd
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QLabel, QTabWidget,
     QTableWidget, QTableWidgetItem, QSizePolicy, QPushButton, QHBoxLayout,
-    QFrame, QGridLayout, QScrollArea
+    QFrame, QGridLayout, QScrollArea, QHeaderView
 )
 from PyQt5.QtCore import QTimer, Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import os
 import subprocess
 import time
+from PyQt5.QtGui import QFont
 import datetime
 
 # 파일 시스템 관련 인코딩 설정
@@ -27,7 +28,7 @@ class RealtimePredictDashboard(QWidget):
         super().__init__()
         self.setWindowTitle("실시간 예측 통합 대시보드")
         self.setGeometry(200, 200, 1300, 850)  # 높이를 850으로 증가
-        
+        self.stats_tabs = {}
         # 폰트 설정
         self.setup_fonts()
 
@@ -51,7 +52,7 @@ class RealtimePredictDashboard(QWidget):
             "co2": {"threshold": 1000, "operator": ">=", "icon": "☁️", "name": "CO2", "unit": "ppm"},
             "vibration": {"threshold": 5.0, "operator": ">=", "icon": "📳", "name": "진동", "unit": "Hz"}
         }
-
+        
         # 모든 예측 결과 파일 경로
         base_path = "C:/Users/user/Desktop/최종프로젝트/cpp/sensor_simulator/shared/data"
         self.sensor_path = os.path.join(base_path, "sensor_result.csv")
@@ -317,6 +318,10 @@ class RealtimePredictDashboard(QWidget):
                 self.tabs.addTab(tab["widget"], label)
                 self.prediction_tabs[label] = tab
 
+        stats_tab = self.create_stats_summary_tab()
+        self.tabs.addTab(stats_tab["widget"], "예측 통계 요약")
+        self.stats_tabs["예측 통계 요약"] = stats_tab
+
     def create_enhanced_sensor_tab(self):
         """향상된 센서 데이터 탭 생성"""
         tab_widget = QWidget()
@@ -324,7 +329,7 @@ class RealtimePredictDashboard(QWidget):
         # 스크롤 영역 생성
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
-        scroll_area.setMinimumHeight(650)  # 스크롤 영역의 최소 높이 설정
+        scroll_area.setMinimumHeight(700)  # 스크롤 영역의 최소 높이 설정
         
         # 스크롤될 메인 위젯 생성
         scroll_content = QWidget()
@@ -339,7 +344,7 @@ class RealtimePredictDashboard(QWidget):
         table.setHorizontalHeaderLabels(columns)
         table.verticalHeader().setVisible(False)
         table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        table.setMaximumHeight(200)  # 테이블 높이 제한
+        table.setMaximumHeight(150)  # 테이블 높이 제한
         main_layout.addWidget(table)
         
         # 센서 상태 카드 섹션 생성
@@ -379,15 +384,16 @@ class RealtimePredictDashboard(QWidget):
         # 그래프 프레임 생성
         graphs_frame = QFrame()
         graphs_layout = QVBoxLayout(graphs_frame)
-        graphs_layout.setSpacing(20)  # 그래프 간 간격 증가
+        graphs_layout.setSpacing(30)  # 그래프 간 간격 증가
         
         # 각 센서에 대한 그래프 생성
         sensor_figures = {}
         for sensor in sensor_names:
-            figure = Figure(figsize=(8, 2.8), dpi=100)  # 높이를 2.8로 설정, DPI 명시적 지정
+            figure = Figure(figsize=(8, 3.5), dpi=100)  # 높이를 2.8로 설정, DPI 명시적 지정
             # 여백 미리 설정
-            figure.subplots_adjust(bottom=0.25, top=0.9, left=0.1, right=0.95)
+            # figure.subplots_adjust(bottom=0.25, top=0.9, left=0.1, right=0.95)
             canvas = FigureCanvas(figure)
+            canvas.setMinimumHeight(250)
             graphs_layout.addWidget(canvas)
             sensor_figures[sensor] = {"figure": figure, "canvas": canvas}
             
@@ -426,7 +432,7 @@ class RealtimePredictDashboard(QWidget):
         figure.subplots_adjust(bottom=0.2, top=0.9, left=0.1, right=0.95)
         canvas = FigureCanvas(figure)
         layout.addWidget(canvas)
-
+    
         return {"widget": tab_widget, "table": table, "figure": figure, "canvas": canvas, "columns": columns, "label": label}
 
     def start_stream(self):
@@ -505,6 +511,7 @@ class RealtimePredictDashboard(QWidget):
                 col_name = tab["columns"][-1]  # 마지막 열을 그래프로 시각화
                 self.update_plot(tab["figure"], df.iloc[:self.index+1], df.columns[0], col_name)
 
+        self.update_prediction_stats()
         self.index += 1
 
     def append_row(self, table, row_data):
@@ -576,7 +583,7 @@ class RealtimePredictDashboard(QWidget):
                 figure.clear()
                 
                 # 여백 설정 (그래프 그리기 전에 설정)
-                figure.subplots_adjust(bottom=0.25, top=0.9, left=0.1, right=0.95)
+                figure.subplots_adjust(bottom=0.25, top=0.9, left=0.1, right=0.9)
                 
                 ax = figure.add_subplot(111)
                 ax.plot(pd.to_datetime(df["timestamp"]), df[sensor], label=sensor, color="#e53935")
@@ -599,6 +606,8 @@ class RealtimePredictDashboard(QWidget):
                 ax.grid(True, linestyle='--', alpha=0.7)
                 ax.legend(loc='upper right', fontsize=9)
                 
+                # 타이트 레이아웃 적용
+                figure.tight_layout()
                 # 그래프 갱신
                 figure_dict["canvas"].draw()
 
@@ -606,7 +615,7 @@ class RealtimePredictDashboard(QWidget):
         fig.clear()
         
         # 여백 설정 (그래프 그리기 전에 설정)
-        fig.subplots_adjust(bottom=0.2, top=0.9, left=0.1, right=0.95)
+        fig.subplots_adjust(bottom=0.2, top=0.9, left=0.12, right=0.9)
         
         ax = fig.add_subplot(111)
         ax.plot(pd.to_datetime(df[x_col]), df[y_col], label=y_col)
@@ -615,7 +624,212 @@ class RealtimePredictDashboard(QWidget):
         ax.tick_params(axis='x', rotation=30, labelsize=8)
         ax.grid(True, linestyle='--', alpha=0.7)
         ax.legend(loc='upper right', fontsize=9)
+        fig.tight_layout()
         fig.canvas.draw()
+    
+    ###
+    # 예측 통계 요약 탭 생성 함수
+    def create_stats_summary_tab(self):
+        """예측 통계 요약 탭 생성"""
+        tab_widget = QWidget()
+        layout = QVBoxLayout()
+        tab_widget.setLayout(layout)
+        
+        # 설명 라벨 추가
+        title_label = QLabel("실시간 예측 통계 요약")
+        title_label.setAlignment(Qt.AlignCenter)
+        title_label.setStyleSheet("""
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding: 5px;
+            color: #333;
+        """)
+        layout.addWidget(title_label)
+        
+        # 파이 차트를 위한 컨테이너 생성
+        charts_container = QWidget()
+        charts_layout = QGridLayout()
+        charts_container.setLayout(charts_layout)
+        
+        # 위험 예측 파이 차트
+        risk_figure = Figure(figsize=(5, 4), dpi=100)
+        risk_canvas = FigureCanvas(risk_figure)
+        risk_canvas.setMinimumHeight(300)
+        
+        # 위험 예측 영역에 제목과 차트 추가
+        risk_frame = QFrame()
+        risk_frame.setStyleSheet("""
+            QFrame {
+                background-color: #f5f5f5;
+                border-radius: 8px;
+                border: 1px solid #ddd;
+                padding: 10px;
+                margin: 5px;
+            }
+        """)
+        risk_layout = QVBoxLayout(risk_frame)
+        risk_title = QLabel("위험 예측 분포")
+        risk_title.setAlignment(Qt.AlignCenter)
+        risk_title.setStyleSheet("font-weight: bold; color: #e53935;")
+        risk_layout.addWidget(risk_title)
+        risk_layout.addWidget(risk_canvas)
+        
+        # 다른 예측 차트를 위한 자리 확보 (확장성)
+        charts_layout.addWidget(risk_frame, 0, 0)
+        
+        # 통계 정보 테이블
+        stats_table = QTableWidget(3, 2)  # 3행(safe, risk, warning), 2열(카테고리, 개수)
+        stats_table.setHorizontalHeaderLabels(["카테고리", "개수"])
+        stats_table.verticalHeader().setVisible(False)
+        stats_table.setItem(0, 0, QTableWidgetItem("Safe"))
+        stats_table.setItem(1, 0, QTableWidgetItem("Risk"))
+        stats_table.setItem(2, 0, QTableWidgetItem("Warning"))
+        
+        # 테이블 스타일 설정
+        stats_table.setStyleSheet("""
+            QTableWidget {
+                gridline-color: #ccc;
+                border: 1px solid #ddd;
+            }
+            QHeaderView::section {
+                background-color: #e53935;
+                color: white;
+                padding: 6px;
+                font-weight: bold;
+            }
+        """)
+        stats_table.setMaximumHeight(150)
+        
+        # 카테고리 셀 색상 설정
+        safe_item = stats_table.item(0, 0)
+        safe_item.setBackground(Qt.green)
+        risk_item = stats_table.item(1, 0)
+        risk_item.setBackground(Qt.red)
+        warning_item = stats_table.item(2, 0)
+        warning_item.setBackground(Qt.yellow)
+        
+        # 테이블 셀 정렬
+        for row in range(3):
+            stats_table.setItem(row, 1, QTableWidgetItem("0"))
+            for col in range(2):
+                item = stats_table.item(row, col)
+                item.setTextAlignment(Qt.AlignCenter)
+        
+        # 테이블 헤더 설정
+        header = stats_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        
+        # 레이아웃에 추가
+        layout.addWidget(charts_container)
+        layout.addWidget(stats_table)
+        
+        return {
+            "widget": tab_widget,
+            "risk_figure": risk_figure,
+            "risk_canvas": risk_canvas,
+            "stats_table": stats_table
+        }
+
+    # 파이 차트 업데이트 함수
+    def update_prediction_stats(self):
+        """예측 통계 요약 업데이트"""
+        # 탭이 없으면 업데이트하지 않음
+        if "예측 통계 요약" not in self.stats_tabs:
+            return
+        
+        stats_tab = self.stats_tabs["예측 통계 요약"]
+        
+        # 위험 예측 데이터 집계
+        if "위험 예측" in self.predictions and not self.predictions["위험 예측"].empty:
+            risk_df = self.predictions["위험 예측"]
+            
+            # 현재까지 표시된 데이터만 집계 (self.index까지)
+            if self.index <= len(risk_df):
+                current_data = risk_df.iloc[:self.index]
+                
+                # risk_prediction 컬럼 값 집계
+                if "risk_prediction" in current_data.columns:
+                    value_counts = current_data["risk_prediction"].value_counts()
+                    
+                    # 파이 차트 업데이트
+                    fig = stats_tab["risk_figure"]
+                    fig.clear()
+                    fig.patch.set_facecolor('#f8f9fa')
+                    ax = fig.add_subplot(111)
+                    
+                    # 데이터가 있는 경우만 파이 차트 그리기
+                    if not value_counts.empty:
+                        # 색상 매핑
+                        colors = {'safe': '#4caf50', 'risk': '#f44336', 'warning': '#ffeb3b'}
+                        chart_colors = [colors.get(val, '#9e9e9e') for val in value_counts.index]
+                        
+                        # 파이 차트 그리기
+                        wedges, texts, autotexts = ax.pie(
+                            value_counts, 
+                            labels=value_counts.index,
+                            autopct='%1.1f%%',
+                            pctdistance=0.75,
+                            startangle=90,
+                            colors=chart_colors,
+                            shadow=True,
+                            explode=[0.05 if val == 'risk' else 0 for val in value_counts.index],  # 위험 카테고리를 살짝 돌출
+                            wedgeprops={'edgecolor': 'white', 'linewidth': 1}
+                            
+                        )
+                        
+                        # 텍스트 스타일 설정
+                        for text in texts:
+                            text.set_fontsize(11)
+                            text.set_fontweight('bold')
+                        for autotext in autotexts:
+                            autotext.set_fontsize(10)
+                            autotext.set_color('white')
+                            autotext.set_fontweight('bold')
+                        
+                        ax.set_title('위험 예측 분포', fontsize=14, fontweight='bold', color='#e53935')
+                        ax.axis('equal')  # 원형 유지
+
+                        # 범례 추가
+                        legend = ax.legend(
+                            wedges, 
+                            [f"{idx}: {val} 건" for idx, val in zip(value_counts.index, value_counts.values)],
+                            title="예측 분류",
+                            loc="center left",
+                            bbox_to_anchor=(1, 0, 0.5, 1),
+                            frameon=True,
+                            framealpha=0.9,
+                            edgecolor='#dddddd'
+                        )
+                        legend.get_title().set_fontweight('bold')
+                        
+                        # 통계 테이블 업데이트
+                        stats_table = stats_tab["stats_table"]
+                        
+                        # 기본값 0으로 설정
+                        for row, category in enumerate(['safe', 'risk', 'warning']):
+                            count = value_counts.get(category, 0)
+                            count_item = QTableWidgetItem(str(count))
+                            count_item.setTextAlignment(Qt.AlignCenter)
+
+                            if count > 0:
+                                count_item.setFont(QFont("Arial", 10, QFont.Bold))
+                        
+                            stats_table.setItem(row, 1, count_item)
+                    else:
+                        # 데이터가 없는 경우 안내 메시지 표시
+                        ax.set_facecolor('#f5f5f5')
+                        ax.text(0.5, 0.5, '데이터 수집 중...', 
+                                horizontalalignment='center',
+                                verticalalignment='center',
+                                fontsize=14,
+                                fontweight='bold',
+                                color='#757575')
+                    
+                    # 캔버스 업데이트
+                    fig.tight_layout()
+                    stats_tab["risk_canvas"].draw()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
