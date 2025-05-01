@@ -526,8 +526,8 @@ class RealtimePredictDashboard(QWidget):
         
         # 충분한 시간이 경과했고 조건이 충족되면 시각화 시작
         if (time.time() - self.start_time >= 10):
-            # 센서 파일이 있으면 처리 시작
-            if os.path.exists(self.sensor_path):
+            # 센서 파일이 있고 모든 예측이 완료된 경우에만 시각화 시작
+            if os.path.exists(self.sensor_path) and all_predictions_done:
                 self.processing_data = False
                 self.processing_timer.stop()
                 
@@ -542,6 +542,11 @@ class RealtimePredictDashboard(QWidget):
                 self.status_label.setStyleSheet("font-size: 14px; font-weight: bold; padding: 5px; color: #2e7d32;")
                 self.timer.start(1000)
                 self.print_status("✅ 실시간 시각화 시작됨")
+            elif os.path.exists(self.sensor_path) and not all_predictions_done:
+                # 센서 파일은 있지만 예측이 모두 완료되지 않은 경우
+                elapsed = int(time.time() - self.start_time)
+                self.status_label.setText(f"상태: ⏳ 예측 처리 중... ({elapsed}초 경과)")
+                self.status_label.setStyleSheet("font-size: 14px; font-weight: bold; padding: 5px; color: #ff9800;")
             else:
                 # 30초 이상 경과했는데도 센서 파일이 없으면 경고
                 if (time.time() - self.start_time >= 30):
