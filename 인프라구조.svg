@@ -1,0 +1,120 @@
+<svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+  <!-- 배경 -->
+  <rect width="1000" height="700" fill="#f8f9fa" />
+  
+  <!-- 제목 -->
+  <text x="500" y="40" font-size="24" text-anchor="middle" font-weight="bold" fill="#333">산업 현장 AI 예측 시스템 인프라 구조</text>
+  
+  <!-- 데이터 소스 영역 -->
+  <rect x="50" y="80" width="200" height="120" rx="10" fill="#e3f2fd" stroke="#1565c0" stroke-width="2" />
+  <text x="150" y="110" font-size="16" text-anchor="middle" font-weight="bold" fill="#0d47a1">데이터 소스</text>
+  <rect x="70" y="125" width="160" height="60" rx="5" fill="#bbdefb" stroke="#1565c0" stroke-width="1" />
+  <text x="150" y="155" font-size="14" text-anchor="middle" fill="#0d47a1">C++ 센서 시뮬레이터</text>
+  <text x="150" y="175" font-size="12" text-anchor="middle" fill="#0d47a1">sensor_simulator.exe</text>
+  
+  <!-- 데이터 처리 및 AI 모델 영역 -->
+  <rect x="300" y="80" width="400" height="300" rx="10" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" />
+  <text x="500" y="110" font-size="16" text-anchor="middle" font-weight="bold" fill="#1b5e20">데이터 처리 및 AI 예측 모델</text>
+  
+  <!-- 모델 컴포넌트들 -->
+  <rect x="320" y="130" width="160" height="50" rx="5" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" />
+  <text x="400" y="160" font-size="14" text-anchor="middle" fill="#1b5e20">위험 예측 모델</text>
+  
+  <rect x="320" y="190" width="160" height="50" rx="5" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" />
+  <text x="400" y="220" font-size="14" text-anchor="middle" fill="#1b5e20">고장 예측 모델</text>
+  
+  <rect x="320" y="250" width="160" height="50" rx="5" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" />
+  <text x="400" y="280" font-size="14" text-anchor="middle" fill="#1b5e20">이상치 탐지 모델</text>
+  
+  <rect x="320" y="310" width="160" height="50" rx="5" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" />
+  <text x="400" y="340" font-size="14" text-anchor="middle" fill="#1b5e20">에너지 예측 모델</text>
+  
+  <rect x="520" y="130" width="160" height="50" rx="5" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" />
+  <text x="600" y="160" font-size="14" text-anchor="middle" fill="#1b5e20">복합 위험 등급 모델</text>
+  
+  <rect x="520" y="190" width="160" height="110" rx="5" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" />
+  <text x="600" y="220" font-size="14" text-anchor="middle" fill="#1b5e20">자동화 스크립트</text>
+  <text x="600" y="245" font-size="12" text-anchor="middle" fill="#1b5e20">main_auto_predictor.py</text>
+  <text x="600" y="265" font-size="12" text-anchor="middle" fill="#1b5e20">auto_*_predictor.py</text>
+  
+  <rect x="520" y="310" width="160" height="50" rx="5" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" />
+  <text x="600" y="340" font-size="14" text-anchor="middle" fill="#1b5e20">센서 이상 감지</text>
+  
+  <!-- 데이터베이스 영역 -->
+  <rect x="300" y="410" width="400" height="200" rx="10" fill="#fff3e0" stroke="#e65100" stroke-width="2" />
+  <text x="500" y="440" font-size="16" text-anchor="middle" font-weight="bold" fill="#e65100">MySQL 데이터베이스 (musago_db)</text>
+  
+  <!-- 테이블들 -->
+  <rect x="320" y="460" width="170" height="40" rx="5" fill="#ffe0b2" stroke="#e65100" stroke-width="1" />
+  <text x="405" y="485" font-size="14" text-anchor="middle" fill="#e65100">event_log</text>
+  
+  <rect x="320" y="510" width="170" height="40" rx="5" fill="#ffe0b2" stroke="#e65100" stroke-width="1" />
+  <text x="405" y="535" font-size="14" text-anchor="middle" fill="#e65100">fault_log</text>
+  
+  <rect x="320" y="560" width="170" height="40" rx="5" fill="#ffe0b2" stroke="#e65100" stroke-width="1" />
+  <text x="405" y="585" font-size="14" text-anchor="middle" fill="#e65100">anomaly_log</text>
+  
+  <rect x="510" y="460" width="170" height="40" rx="5" fill="#ffe0b2" stroke="#e65100" stroke-width="1" />
+  <text x="595" y="485" font-size="14" text-anchor="middle" fill="#e65100">energy_log</text>
+  
+  <rect x="510" y="510" width="170" height="40" rx="5" fill="#ffe0b2" stroke="#e65100" stroke-width="1" />
+  <text x="595" y="535" font-size="14" text-anchor="middle" fill="#e65100">risk_level_log</text>
+  
+  <rect x="510" y="560" width="170" height="40" rx="5" fill="#ffe0b2" stroke="#e65100" stroke-width="1" />
+  <text x="595" y="585" font-size="14" text-anchor="middle" fill="#e65100">sensor_error_log (CSV)</text>
+  
+  <!-- 시각화 영역 - 수정된 부분 -->
+  <rect x="750" y="80" width="200" height="530" rx="10" fill="#e1f5fe" stroke="#0288d1" stroke-width="2" />
+  <text x="850" y="110" font-size="16" text-anchor="middle" font-weight="bold" fill="#01579b">시각화 대시보드</text>
+  
+  <rect x="770" y="130" width="160" height="80" rx="5" fill="#b3e5fc" stroke="#0288d1" stroke-width="1" />
+  <text x="850" y="160" font-size="14" text-anchor="middle" fill="#01579b">Streamlit 대시보드</text>
+  <text x="850" y="180" font-size="12" text-anchor="middle" fill="#01579b">dashboard_stream.py</text>
+  
+  <rect x="770" y="220" width="160" height="80" rx="5" fill="#b3e5fc" stroke="#0288d1" stroke-width="1" />
+  <text x="850" y="250" font-size="14" text-anchor="middle" fill="#01579b">GUI 대시보드</text>
+  <text x="850" y="270" font-size="12" text-anchor="middle" fill="#01579b">dashboard.py</text>
+  
+  <rect x="770" y="310" width="160" height="280" rx="5" fill="#b3e5fc" stroke="#0288d1" stroke-width="1" />
+  <text x="850" y="335" font-size="14" text-anchor="middle" fill="#01579b">6개 탭 화면</text>
+  <text x="850" y="360" font-size="12" text-anchor="middle" fill="#01579b">- 위험 이벤트</text>
+  <text x="850" y="385" font-size="12" text-anchor="middle" fill="#01579b">- 고장 로그</text>
+  <text x="850" y="410" font-size="12" text-anchor="middle" fill="#01579b">- 복합 위험도</text>
+  <text x="850" y="435" font-size="12" text-anchor="middle" fill="#01579b">- 이상치 탐지</text>
+  <text x="850" y="460" font-size="12" text-anchor="middle" fill="#01579b">- 에너지 과소비</text>
+  <text x="850" y="485" font-size="12" text-anchor="middle" fill="#01579b">- 센서 이상</text>
+  
+  <!-- 백업 저장소 -->
+  <rect x="80" y="410" width="170" height="150" rx="10" fill="#f3e5f5" stroke="#6a1b9a" stroke-width="2" />
+  <text x="165" y="440" font-size="16" text-anchor="middle" font-weight="bold" fill="#4a148c">백업 저장소</text>
+  
+  <rect x="100" y="460" width="130" height="80" rx="5" fill="#e1bee7" stroke="#6a1b9a" stroke-width="1" />
+  <text x="165" y="485" font-size="14" text-anchor="middle" fill="#4a148c">CSV 백업</text>
+  <text x="165" y="505" font-size="12" text-anchor="middle" fill="#4a148c">backup_to_csv.py</text>
+  <text x="165" y="525" font-size="12" text-anchor="middle" fill="#4a148c">테이블별 CSV 파일</text>
+  
+  <!-- 화살표 연결 -->
+  <!-- 센서 -> AI 모델 -->
+  <path d="M 250 140 L 295 140" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+  
+  <!-- AI 모델 -> DB -->
+  <path d="M 500 380 L 500 405" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+  
+  <!-- DB -> 시각화 -->
+  <path d="M 700 500 L 745 500" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+  
+  <!-- DB -> 백업 -->
+  <path d="M 300 500 L 255 500" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+  
+  <!-- 화살표 마커 정의 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+    </marker>
+  </defs>
+  
+  <!-- 레전드 -->
+  <rect x="50" y="630" width="900" height="60" rx="5" fill="white" stroke="#333" stroke-width="1" />
+  <text x="500" y="650" font-size="16" text-anchor="middle" font-weight="bold" fill="#333">시스템 데이터 흐름</text>
+  <text x="500" y="675" font-size="14" text-anchor="middle" fill="#333">센서 데이터 생성 → AI 모델 예측 → MySQL DB 저장 → Streamlit 대시보드 표시 → CSV 백업</text>
+</svg>
